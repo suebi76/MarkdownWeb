@@ -108,14 +108,14 @@ function buildFileTree(string $dir, string $contentDir): array
     return $result;
 }
 
-function renderFileTree(array $items, string $csrfToken): void
+function renderFileTree(array $items, string $csrfToken, string $baseUrl): void
 {
     foreach ($items as $item) {
         if ($item['type'] === 'dir') {
             echo '<details class="ftree-folder" open>';
             echo '<summary class="ftree-folder-name">📁 ' . htmlspecialchars($item['name']) . '</summary>';
             echo '<div class="ftree-children">';
-            renderFileTree($item['children'], $csrfToken);
+            renderFileTree($item['children'], $csrfToken, $baseUrl);
             echo '</div></details>';
         } else {
             $icon = match($item['ext']) {
@@ -124,22 +124,30 @@ function renderFileTree(array $items, string $csrfToken): void
                 'pdf'  => '📕',
                 default => '📎',
             };
-            $sizeStr = formatBytes((int)$item['size']);
+            $sizeStr  = formatBytes((int)$item['size']);
             $safePath = htmlspecialchars($item['path']);
             $safeName = htmlspecialchars($item['name']);
             $safeCsrf = htmlspecialchars($csrfToken);
+            $safeBase = htmlspecialchars($baseUrl);
+
+            $editBtn = '';
+            if ($item['ext'] === 'md') {
+                $editHref = $safeBase . '/admin/editor.php?file=' . rawurlencode($item['path']);
+                $editBtn  = "<a href=\"$editHref\" class=\"btn btn-sm btn-outline\">Bearbeiten</a>";
+            }
 
             echo <<<HTML
             <div class="ftree-file">
                 <span class="ftree-file-name">$icon $safeName</span>
                 <span class="ftree-file-size">$sizeStr</span>
                 <div class="ftree-file-actions">
+                    $editBtn
                     <button class="btn btn-sm btn-outline rename-btn"
                         data-path="$safePath" data-name="$safeName">
                         Umbenennen
                     </button>
-                    <form method="post" action="<?= $baseUrl ?>/admin/filetree.php" class="inline-form"
-                        onsubmit="return confirm('\"$safeName\" wirklich löschen?')">
+                    <form method="post" action="$safeBase/admin/filetree.php" class="inline-form"
+                        onsubmit="return confirm('&quot;$safeName&quot; wirklich löschen?')">
                         <input type="hidden" name="action"     value="delete">
                         <input type="hidden" name="path"       value="$safePath">
                         <input type="hidden" name="csrf_token" value="$safeCsrf">
@@ -207,7 +215,7 @@ $flash = getFlash();
             <?php if (empty($tree)): ?>
                 <p class="empty-state">Noch keine Dateien. <a href="<?= $baseUrl ?>/admin/upload.php">Jetzt hochladen →</a></p>
             <?php else: ?>
-                <?php renderFileTree($tree, $csrfToken); ?>
+                <?php renderFileTree($tree, $csrfToken, $baseUrl); ?>
             <?php endif; ?>
         </div>
     </main>
