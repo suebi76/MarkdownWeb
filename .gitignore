@@ -1,0 +1,24 @@
+# Dependencies (lokal installieren, vendor/ wird mitgeliefert für Shared-Hosting)
+# vendor/
+
+# Cache
+cache/*.json
+cache/*.db
+cache/*.sqlite
+
+# Composer PHAR
+composer.phar
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Claude
+.claude/

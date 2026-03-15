@@ -1,0 +1,17 @@
+Options -Indexes
+CheckSpelling Off
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /md-web/
+
+# Schütze sensitive Verzeichnisse
+RewriteRule ^(src|cache|vendor)(/|$) - [F,L]
+
+# Existierende Dateien und Verzeichnisse direkt ausliefern
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Alles andere über index.php routen
+RewriteRule . index.php [L]
+</IfModule>

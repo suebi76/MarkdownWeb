@@ -1,0 +1,7 @@
+Options -Indexes
+
+# .md-Dateien nicht direkt ausliefern
+<FilesMatch "\.md$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
