@@ -132,7 +132,7 @@ class MarkdownRenderer
             $headings[] = [
                 'level' => (int) $m[1],
                 'id'    => $m[2],
-                'text'  => strip_tags($m[3]),
+                'text'  => trim(strip_tags($m[3]), " \t\n\r\0\x0B#"),
             ];
         }
 
